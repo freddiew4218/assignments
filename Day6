@@ -81,3 +81,584 @@
 
 23. True/False: A class can implement more than one interface.
     - True
+
+
+Coding #1:
+using System;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        int[] numbers = GenerateNumbers(10);
+        Reverse(numbers);
+        PrintNumbers(numbers);
+    }
+
+    static int[] GenerateNumbers(int length)
+    {
+        int[] numbers = new int[length];
+        for (int i = 0; i < length; i++)
+        {
+            numbers[i] = i + 1;
+        }
+        return numbers;
+    }
+
+    static void Reverse(int[] array)
+    {
+        int length = array.Length;
+        for (int i = 0; i < length / 2; i++)
+        {
+            int temp = array[i];
+            array[i] = array[length - i - 1];
+            array[length - i - 1] = temp;
+        }
+    }
+
+    static void PrintNumbers(int[] array)
+    {
+        foreach (int number in array)
+        {
+            Console.Write(number + " ");
+        }
+        Console.WriteLine();
+    }
+}
+
+Coding #2:
+
+using System;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        for (int i = 1; i <= 10; i++)
+        {
+            Console.WriteLine($"Fibonacci({i}) = {Fibonacci(i)}");
+        }
+    }
+
+    static int Fibonacci(int n)
+    {
+        if (n <= 2)
+            return 1;
+        else
+            return Fibonacci(n - 1) + Fibonacci(n - 2);
+    }
+}
+
+
+Coding #3:
+
+using System;
+using System.Collections.Generic;
+
+namespace OOPDemo
+{
+    interface IPersonService
+    {
+        int CalculateAge();
+        decimal CalculateSalary();
+        List<string> GetAddresses();
+    }
+
+    interface IStudentService : IPersonService
+    {
+        double CalculateGPA();
+    }
+
+    interface IInstructorService : IPersonService
+    {
+        void AssignDepartment(string department);
+    }
+
+    class Person
+    {
+        public string Name { get; set; }
+        public DateTime BirthDate { get; set; }
+        public decimal Salary { get; protected set; }
+        private List<string> Addresses { get; set; }
+
+        public Person(string name, DateTime birthDate)
+        {
+            Name = name;
+            BirthDate = birthDate;
+            Addresses = new List<string>();
+        }
+
+        public void AddAddress(string address)
+        {
+            Addresses.Add(address);
+        }
+
+        public List<string> GetAddresses()
+        {
+            return Addresses;
+        }
+
+        public virtual decimal CalculateSalary()
+        {
+            return Salary;
+        }
+
+        public int CalculateAge()
+        {
+            var today = DateTime.Today;
+            var age = today.Year - BirthDate.Year;
+            if (BirthDate.Date > today.AddYears(-age)) age--;
+            return age;
+        }
+    }
+
+    class Student : Person, IStudentService
+    {
+        private List<double> Grades { get; set; }
+
+        public Student(string name, DateTime birthDate) : base(name, birthDate)
+        {
+            Grades = new List<double>();
+        }
+
+        public void AddGrade(double grade)
+        {
+            Grades.Add(grade);
+        }
+
+        public double CalculateGPA()
+        {
+            double total = 0;
+            foreach (var grade in Grades)
+            {
+                total += grade;
+            }
+            return Grades.Count > 0 ? total / Grades.Count : 0;
+        }
+    }
+
+    class Instructor : Person, IInstructorService
+    {
+        public string Department { get; private set; }
+        public DateTime JoinDate { get; set; }
+
+        public Instructor(string name, DateTime birthDate, DateTime joinDate) : base(name, birthDate)
+        {
+            JoinDate = joinDate;
+        }
+
+        public override decimal CalculateSalary()
+        {
+            var experience = DateTime.Today.Year - JoinDate.Year;
+            if (JoinDate.Date > DateTime.Today.AddYears(-experience)) experience--;
+            return base.CalculateSalary() + experience * 1000; // Added bonus for experience
+        }
+
+        public void AssignDepartment(string department)
+        {
+            Department = department;
+        }
+    }
+
+    class Course
+    {
+        public string Name { get; set; }
+        public List<Student> EnrolledStudents { get; set; }
+
+        public Course(string name)
+        {
+            Name = name;
+            EnrolledStudents = new List<Student>();
+        }
+
+        public void EnrollStudent(Student student)
+        {
+            EnrolledStudents.Add(student);
+        }
+    }
+
+    class Department
+    {
+        public string Name { get; set; }
+        public Instructor Head { get; set; }
+        public decimal Budget { get; set; }
+        public List<Course> Courses { get; set; }
+
+        public Department(string name, decimal budget)
+        {
+            Name = name;
+            Budget = budget;
+            Courses = new List<Course>();
+        }
+
+        public void SetHead(Instructor head)
+        {
+            Head = head;
+        }
+
+        public void AddCourse(Course course)
+        {
+            Courses.Add(course);
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Instructor instructor = new Instructor("John Doe", new DateTime(1980, 1, 1), new DateTime(2005, 6, 1));
+            Student student = new Student("Jane Smith", new DateTime(2000, 5, 15));
+            Department department = new Department("Computer Science", 100000);
+            Course course = new Course("Programming 101");
+
+            instructor.AssignDepartment(department.Name);
+            department.SetHead(instructor);
+            department.AddCourse(course);
+            course.EnrollStudent(student);
+
+            student.AddGrade(90);
+            student.AddGrade(85);
+
+            instructor.AddAddress("123 Main St.");
+            student.AddAddress("456 Elm St.");
+
+            Console.WriteLine($"{instructor.Name} (Age: {instructor.CalculateAge()}) - Department: {instructor.Department}, Salary: {instructor.CalculateSalary()}");
+            Console.WriteLine($"{student.Name} (Age: {student.CalculateAge()}) - GPA: {student.CalculateGPA()}");
+            Console.WriteLine($"Department Head: {department.Head.Name}, Budget: {department.Budget}");
+        }
+    }
+}
+
+
+Coding #4:
+
+using System;
+
+class Color
+{
+    public int Red { get; private set; }
+    public int Green { get; private set; }
+    public int Blue { get; private set; }
+    public int Alpha { get; private set; }
+
+    public Color(int red, int green, int blue, int alpha = 255)
+    {
+        Red = red;
+        Green = green;
+        Blue = blue;
+        Alpha = alpha;
+    }
+
+    public void SetRed(int red) => Red = red;
+    public void SetGreen(int green) => Green = green;
+    public void SetBlue(int blue) => Blue = blue;
+    public void SetAlpha(int alpha) => Alpha = alpha;
+
+    public double GetGrayscale()
+    {
+        return (Red + Green + Blue) / 3.0;
+    }
+}
+
+class Ball
+{
+    public int Size { get; private set; }
+    public Color Color { get; private set; }
+    private int throwCount;
+
+    public Ball(int size, Color color)
+    {
+        Size = size;
+        Color = color;
+        throwCount = 0;
+    }
+
+    public void Pop()
+    {
+        Size = 0;
+    }
+
+    public void Throw()
+    {
+        if (Size > 0)
+        {
+            throwCount++;
+        }
+    }
+
+    public int GetThrowCount()
+    {
+        return throwCount;
+    }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        Color red = new Color(255, 0, 0);
+        Ball ball1 = new Ball(10, red);
+        
+        ball1.Throw();
+        ball1.Throw();
+        Console.WriteLine($"Ball1 throw count: {ball1.GetThrowCount()}"); // Output: 2
+
+        ball1.Pop();
+        ball1.Throw();
+        Console.WriteLine($"Ball1 throw count after pop: {ball1.GetThrowCount()}"); // Output: 2
+
+        Color blue = new Color(0, 0, 255, 128);
+        Ball ball2 = new Ball(15, blue);
+        
+        ball2.Throw();
+        Console.WriteLine($"Ball2 throw count: {ball2.GetThrowCount()}"); // Output: 1
+    }
+}
+
+
+Designing and Building Classes using object-oriented principles:
+
+Interfaces:
+
+public interface IPersonService
+{
+    int CalculateAge();
+    decimal CalculateSalary();
+    List<string> GetAddresses();
+}
+
+public interface IStudentService : IPersonService
+{
+    double CalculateGPA();
+}
+
+public interface IInstructorService : IPersonService
+{
+    void AssignDepartment(string department);
+}
+Base Person Class:
+
+public abstract class Person : IPersonService
+{
+    public string Name { get; set; }
+    public DateTime BirthDate { get; set; }
+    private List<string> Addresses { get; set; }
+    protected decimal Salary { get; set; }
+
+    public Person(string name, DateTime birthDate)
+    {
+        Name = name;
+        BirthDate = birthDate;
+        Addresses = new List<string>();
+        Salary = 0;
+    }
+
+    public void AddAddress(string address)
+    {
+        Addresses.Add(address);
+    }
+
+    public List<string> GetAddresses()
+    {
+        return Addresses;
+    }
+
+    public abstract decimal CalculateSalary();
+
+    public int CalculateAge()
+    {
+        var today = DateTime.Today;
+        var age = today.Year - BirthDate.Year;
+        if (BirthDate.Date > today.AddYears(-age)) age--;
+        return age;
+    }
+}
+Student Class:
+
+public class Student : Person, IStudentService
+{
+    private List<double> Grades { get; set; }
+
+    public Student(string name, DateTime birthDate) : base(name, birthDate)
+    {
+        Grades = new List<double>();
+    }
+
+    public void AddGrade(double grade)
+    {
+        Grades.Add(grade);
+    }
+
+    public double CalculateGPA()
+    {
+        double total = 0;
+        foreach (var grade in Grades)
+        {
+            total += grade;
+        }
+        return Grades.Count > 0 ? total / Grades.Count : 0;
+    }
+
+    public override decimal CalculateSalary()
+    {
+        return 0; // Students don't have a salary in this context
+    }
+}
+Instructor Class:
+
+public class Instructor : Person, IInstructorService
+{
+    public string Department { get; private set; }
+    public DateTime JoinDate { get; set; }
+
+    public Instructor(string name, DateTime birthDate, DateTime joinDate) : base(name, birthDate)
+    {
+        JoinDate = joinDate;
+    }
+
+    public override decimal CalculateSalary()
+    {
+        var experience = DateTime.Today.Year - JoinDate.Year;
+        if (JoinDate.Date > DateTime.Today.AddYears(-experience)) experience--;
+        return Salary + experience * 1000; // Added bonus for experience
+    }
+
+    public void AssignDepartment(string department)
+    {
+        Department = department;
+    }
+}
+Course Class:
+
+public class Course
+{
+    public string Name { get; set; }
+    public List<Student> EnrolledStudents { get; set; }
+
+    public Course(string name)
+    {
+        Name = name;
+        EnrolledStudents = new List<Student>();
+    }
+
+    public void EnrollStudent(Student student)
+    {
+        EnrolledStudents.Add(student);
+    }
+}
+Department Class:
+
+public class Department
+{
+    public string Name { get; set; }
+    public Instructor Head { get; set; }
+    public decimal Budget { get; set; }
+    public List<Course> Courses { get; set; }
+
+    public Department(string name, decimal budget)
+    {
+        Name = name;
+        Budget = budget;
+        Courses = new List<Course>();
+    }
+
+    public void SetHead(Instructor head)
+    {
+        Head = head;
+    }
+
+    public void AddCourse(Course course)
+    {
+        Courses.Add(course);
+    }
+}
+
+Task 4: Color and Ball Classes
+Color Class:
+
+
+public class Color
+{
+    public int Red { get; private set; }
+    public int Green { get; private set; }
+    public int Blue { get; private set; }
+    public int Alpha { get; private set; }
+
+    public Color(int red, int green, int blue, int alpha = 255)
+    {
+        Red = red;
+        Green = green;
+        Blue = blue;
+        Alpha = alpha;
+    }
+
+    public void SetRed(int red) => Red = red;
+    public void SetGreen(int green) => Green = green;
+    public void SetBlue(int blue) => Blue = blue;
+    public void SetAlpha(int alpha) => Alpha = alpha;
+
+    public double GetGrayscale()
+    {
+        return (Red + Green + Blue) / 3.0;
+    }
+}
+Ball Class:
+
+
+public class Ball
+{
+    public int Size { get; private set; }
+    public Color Color { get; private set; }
+    private int throwCount;
+
+    public Ball(int size, Color color)
+    {
+        Size = size;
+        Color = color;
+        throwCount = 0;
+    }
+
+    public void Pop()
+    {
+        Size = 0;
+    }
+
+    public void Throw()
+    {
+        if (Size > 0)
+        {
+            throwCount++;
+        }
+    }
+
+    public int GetThrowCount()
+    {
+        return throwCount;
+    }
+}
+Main Program for Color and Ball:
+
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        Color red = new Color(255, 0, 0);
+        Ball ball1 = new Ball(10, red);
+        
+        ball1.Throw();
+        ball1.Throw();
+        Console.WriteLine($"Ball1 throw count: {ball1.GetThrowCount()}"); // Output: 2
+
+        ball1.Pop();
+        ball1.Throw();
+        Console.WriteLine($"Ball1 throw count after pop: {ball1.GetThrowCount()}"); // Output: 2
+
+        Color blue = new Color(0, 0, 255, 128);
+        Ball ball2 = new Ball(15, blue);
+        
+        ball2.Throw();
+        Console.WriteLine($"Ball2 throw count: {ball2.GetThrowCount()}"); // Output: 1
+    }
+}
+
